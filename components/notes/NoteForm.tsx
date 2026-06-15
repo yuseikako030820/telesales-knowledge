@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import TagInput from './TagInput'
 import TranscriptPasteBox from './TranscriptPasteBox'
 import VoiceInputButton from '@/components/voice/VoiceInputButton'
@@ -48,6 +47,8 @@ export default function NoteForm({ note }: NoteFormProps) {
         tags,
       }
 
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('ログインが必要です')
       if (note) {
         const { error } = await supabase
           .from('notes')
@@ -56,7 +57,7 @@ export default function NoteForm({ note }: NoteFormProps) {
         if (error) throw error
         toast.success('更新しました')
       } else {
-        const { error } = await supabase.from('notes').insert(payload)
+        const { error } = await supabase.from('notes').insert({ ...payload, user_id: user.id })
         if (error) throw error
         toast.success('保存しました')
       }
@@ -74,12 +75,22 @@ export default function NoteForm({ note }: NoteFormProps) {
     <div className="space-y-6 max-w-2xl">
       <div className="space-y-2">
         <Label>タイプ</Label>
-        <Tabs value={type} onValueChange={(v) => setType(v as NoteType)}>
-          <TabsList>
-            <TabsTrigger value="telesales">テレアポ知見</TabsTrigger>
-            <TabsTrigger value="meeting">MTGメモ</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="flex gap-2">
+          {(['telesales', 'meeting'] as NoteType[]).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setType(t)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                type === t
+                  ? 'bg-gray-900 text-white border-gray-900'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-gray-500'
+              }`}
+            >
+              {t === 'telesales' ? 'テレアポ知見' : 'MTGメモ'}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-2">

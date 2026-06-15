@@ -9,7 +9,7 @@ import TopBar from '@/components/layout/TopBar'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'テレアポ ナレッジ',
+  title: 'テレアポ君',
   description: 'テレアポ知見・PDCA・日報を管理するナレッジアプリ',
 }
 

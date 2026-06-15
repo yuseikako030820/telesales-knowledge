@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import VoiceInputButton from '@/components/voice/VoiceInputButton'
 import { toast } from 'sonner'
 
@@ -44,13 +43,15 @@ export default function PdcaForm({ theme }: Props) {
     }
     setSaving(true)
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('ログインが必要です')
       const payload = { name, goal, kpi_target: kpiTarget, do_content: doContent, check_act: checkAct, is_active: isActive }
       if (theme) {
         const { error } = await supabase.from('pdca_themes').update(payload).eq('id', theme.id)
         if (error) throw error
         toast.success('更新しました')
       } else {
-        const { error } = await supabase.from('pdca_themes').insert(payload)
+        const { error } = await supabase.from('pdca_themes').insert({ ...payload, user_id: user.id })
         if (error) throw error
         toast.success('作成しました')
       }
@@ -116,8 +117,18 @@ export default function PdcaForm({ theme }: Props) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Switch id="active" checked={isActive} onCheckedChange={setIsActive} />
-        <Label htmlFor="active">アクティブ（進行中）</Label>
+        <Label>ステータス</Label>
+        <button
+          type="button"
+          onClick={() => setIsActive(!isActive)}
+          className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
+            isActive
+              ? 'bg-green-100 text-green-700 border-green-300'
+              : 'bg-gray-100 text-gray-500 border-gray-300'
+          }`}
+        >
+          {isActive ? '● 進行中' : '○ 完了'}
+        </button>
       </div>
 
       <div className="flex gap-3">

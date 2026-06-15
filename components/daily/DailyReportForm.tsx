@@ -32,6 +32,9 @@ export default function DailyReportForm({ report, date }: Props) {
   async function handleSave() {
     setSaving(true)
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('ログインが必要です')
+
       const payload = {
         report_date: date,
         call_count: callCount,
@@ -43,7 +46,7 @@ export default function DailyReportForm({ report, date }: Props) {
         const { error } = await supabase.from('daily_reports').update(payload).eq('id', report.id)
         if (error) throw error
       } else {
-        const { error } = await supabase.from('daily_reports').insert(payload)
+        const { error } = await supabase.from('daily_reports').insert({ ...payload, user_id: user.id })
         if (error) throw error
       }
       toast.success('保存しました')

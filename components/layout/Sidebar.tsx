@@ -18,7 +18,7 @@ export default function Sidebar() {
   return (
     <aside className="w-56 shrink-0 border-r bg-white min-h-screen flex flex-col">
       <div className="px-4 py-5 border-b">
-        <span className="font-bold text-lg tracking-tight">テレアポ ナレッジ</span>
+        <span className="font-bold text-lg tracking-tight">テレアポ君</span>
       </div>
       <nav className="flex-1 px-2 py-4 space-y-1">
         {navItems.map(({ href, label, icon: Icon }) => (

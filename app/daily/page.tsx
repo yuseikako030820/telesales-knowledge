@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { todayISO } from '@/lib/utils'
 import type { DailyReport } from '@/lib/types'
 import { CalendarPlus } from 'lucide-react'
+import DateNavigator from '@/components/daily/DateNavigator'
 
 export default async function DailyPage() {
   const supabase = await createClient()
@@ -22,12 +23,15 @@ export default async function DailyPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">日報</h1>
-        <Link href={`/daily/${today}`}>
-          <Button size="sm">
-            <CalendarPlus className="w-4 h-4 mr-1" />
-            {hasToday ? '今日の日報を見る' : '今日の日報を記録'}
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <DateNavigator />
+          <Link href={`/daily/${today}`}>
+            <Button size="sm">
+              <CalendarPlus className="w-4 h-4 mr-1" />
+              {hasToday ? '今日の日報を見る' : '今日の日報を記録'}
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {(reports ?? []).length === 0 ? (
